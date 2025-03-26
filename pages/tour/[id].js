@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { supabase } from '../../lib/supabase'
 import LoadingScreen from '../../components/LoadingScreen'
+import Head from 'next/head'
 
 export default function TourPage() {
   const router = useRouter()
@@ -10,12 +11,13 @@ export default function TourPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Prevent body scrolling
-    document.body.style.overflow = 'hidden'
-    
-    // Cleanup function to restore body scrolling
+    // Minimal body style adjustments
+    document.body.style.overflow = 'auto'
+    document.body.style.position = 'relative'
+
     return () => {
-      document.body.style.overflow = 'auto'
+      document.body.style.overflow = ''
+      document.body.style.position = ''
     }
   }, [])
 
@@ -40,37 +42,68 @@ export default function TourPage() {
     }
   }
 
+  const handleIframeLoad = (e) => {
+    try {
+      const iframeDoc = e.target.contentDocument || e.target.contentWindow.document;
+
+      // Remove potential interfering styles
+      const styleElements = iframeDoc.getElementsByTagName('style');
+      while (styleElements.length > 0) {
+        styleElements[0].parentNode.removeChild(styleElements[0]);
+      }
+
+      // Remove inline styles from body and other elements
+      const removeInlineStyles = (element) => {
+        if (element) {
+          element.removeAttribute('style');
+          const children = element.getElementsByTagName('*');
+          for (let child of children) {
+            child.removeAttribute('style');
+          }
+        }
+      };
+
+      removeInlineStyles(iframeDoc.body);
+    } catch (error) {
+      console.error('Error modifying iframe content:', error);
+    }
+  }
+
   if (isLoading) return <LoadingScreen />
   if (!listing) return null
 
   return (
-    <div 
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        margin: 0,
-        padding: 0,
-        overflow: 'hidden',
-        zIndex: 9999
-      }}
-    >
-      <iframe
-        src={listing.virtual_tour_url}
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+      </Head>
+      <div
         style={{
+          position: 'relative',
           width: '100%',
-          height: '100%',
-          border: 'none',
-          display: 'block',
+          height: 'calc(100vh - 56px)', // Adjust height to leave space for bottom nav
           margin: 0,
-          padding: 0
+          padding: 0,
+          zIndex: 9999
         }}
-        title="Virtual Tour"
-        allowFullScreen
-        frameBorder="0"
-      />
-    </div>
+      >
+        <iframe
+          src={listing.virtual_tour_url}
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            display: 'block',
+            margin: 0,
+            padding: 0,
+            overflow: 'hidden'
+          }}
+          onLoad={handleIframeLoad}
+          title="Virtual Tour"
+          allowFullScreen
+          frameBorder="0"
+        />
+      </div>
+    </>
   )
 }
