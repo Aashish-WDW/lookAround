@@ -83,8 +83,4 @@ export default function SearchResults() {
             </Container>
         </>
     )
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 46232fe (Brief description of your changes)
