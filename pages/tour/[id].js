@@ -11,7 +11,10 @@ export default function TourPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+<<<<<<< HEAD
     // Minimal body style adjustments
+=======
+>>>>>>> 46232fe (Brief description of your changes)
     document.body.style.overflow = 'auto'
     document.body.style.position = 'relative'
 

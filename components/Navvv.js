@@ -132,4 +132,8 @@ export default function Navvv() {
       </Modal>
     </>
   )
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 46232fe (Brief description of your changes)
