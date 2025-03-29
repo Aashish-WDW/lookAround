@@ -1,6 +1,9 @@
+// pages/index.js
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import ListingCard from '../components/ListingCard'
+import ListingCard from '../components/ListingCard'// pages/index.js
+import Navvv from '../components/Navvv'  // Change to default import
+import 'bootstrap/dist/css/bootstrap.min.css' // Important: Import Bootstrap CSS
 
 export default function Home() {
   const [listings, setListings] = useState([])
@@ -16,7 +19,6 @@ export default function Home() {
         .from('virtual_tours')
         .select('*')
         .order('created_at', { ascending: false })
-
       if (error) throw error
       setListings(data)
     } catch (err) {
@@ -36,14 +38,17 @@ export default function Home() {
 
   return (
     <div>
-      <h1>360° Virtual Tours</h1>
-      {listings.map(listing => (
-        <ListingCard 
-          key={listing.id} 
-          listing={listing} 
-          onCopyLink={handleCopyLink}
-        />
-      ))}
+      <Navvv />
+      <br />
+      <div className="container">
+        {listings.map(listing => (
+          <ListingCard
+            key={listing.id}
+            listing={listing}
+            onCopyLink={handleCopyLink}
+          />
+        ))}
+      </div>
     </div>
   )
 }
